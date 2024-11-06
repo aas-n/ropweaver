@@ -45,7 +45,7 @@ pip install argparse
 ```
 python ropweaver.py <filename> [options]
 Options
-<filename>: The file containing the list of gadgets.
+<filename>: R++ file output containing the list of gadgets.
 -b, --bad-bytes: Specify bad bytes to exclude from the gadgets, e.g., '00 0a 0b 0d'.
 -c, --no-color: Disable colored output.
 -l, --limit: Limit the number of gadgets displayed per category.
