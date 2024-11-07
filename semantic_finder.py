@@ -1,5 +1,5 @@
 import re
-from utils import remove_ansi_codes, debug_print
+from utils import remove_ansi_codes, debug_print, two_complement
 
 def find_shortest_gadget(categories, category, pattern_template, debug, **kwargs):
     """
@@ -34,18 +34,21 @@ def find_semantic_gadgets(categories, semantic, debug):
     """Searches for the gadget or chain of gadgets matching the specified semantic."""
     debug_print(f"[DEBUG] Processing semantic: {semantic}", debug)
     
-    # Define patterns for each semantic type
+    # Define patterns for each semantic type, ordered from specific to general
     patterns = {
+        r"(\w+)\s*<-\s*(\w+)\s*\+\s*(\d+)": (".: REG1 <- REG2 + OFFSET gadgets :.", None),  # Specific pattern for REG + <offset>
+        r"(\w+)\s*<-\s*(\w+)\s*-\s*(\d+)": (".: REG1 <- REG2 - OFFSET gadgets :.", None),   # Specific pattern for REG - <offset>
         r"\[(\w+)\]\s*<-\s*(\w+)": (".: [REG1] <- REG2 gadgets :.", r".*mov (dword ptr\s*)?\[{dest}\], {src}.* ret;?"),
         r"(\w+)\s*<-\s*\[(\w+)\]": (".: REG1 <- [REG2] gadgets :.", r".*mov {dest}, \[{src}\].* ret;?"),
-        r"(\w+)\s*<-\s*(\w+)": (".: REG1 <- REG2 gadgets :.", r".*mov {dest}, {src}.* ret;?"),
+        r"(\w+)\s*<- 0": (".: REG <- 0 gadgets :.", r".*xor {dest}, {dest}.* ret;?"),
+        r"(\w+)\s*<-\s*(\w+)": (".: REG1 <- REG2 gadgets :.", r".*mov {dest}, {src}.* ret;?"),  # General pattern for REG <- REG
         r"(\w+)\s*<->\s*(\w+)": (".: REG1 <-> REG2 gadgets :.", r".*xchg {dest}, {src}.* ret;?"),
         r"(\w+)\s*\+\s*(\w+)": (".: REG1 + REG2 gadgets :.", r".*add {dest}, {src}.* ret;?"),
         r"(\w+)\s*-\s*(\w+)": (".: REG1 - REG2 gadgets :.", r".*sub {dest}, {src}.* ret;?"),
-        r"(\w+)\s*<- 0": (".: REG <- 0 gadgets :.", r".*xor {dest}, {dest}.* ret;?"),
         r"(\w+)\s*\+\+": (".: REG++ gadgets :.", r".*inc {dest}.* ret;?"),
         r"(\w+)\s*--": (".: REG-- gadgets :.", r".*dec {dest}.* ret;?"),
-        r"neg\s+(\w+)": (".: NEG gadgets :.", r".*neg {dest}.* ret;?")
+        r"neg\s+(\w+)": (".: NEG gadgets :.", r".*neg {dest}.* ret;?"),
+        r"pop\s+(\w+)": (".: POP gadgets :.", r".*pop {dest}.* ret;?")  # New pattern for pop reg
     }
 
     # Identify the semantic type and search for a direct gadget if available
@@ -53,21 +56,66 @@ def find_semantic_gadgets(categories, semantic, debug):
         match = re.match(pattern, semantic)
         if match:
             groups = match.groups()
-            if len(groups) == 2:
+            if len(groups) == 3:
+                dest, src, offset = groups
+                offset = int(offset)
+                if category == ".: REG1 <- REG2 + OFFSET gadgets :.":
+                    return build_offset_gadget_chain(categories, dest, src, offset, "add", debug)
+                elif category == ".: REG1 <- REG2 - OFFSET gadgets :.":
+                    return build_offset_gadget_chain(categories, dest, src, offset, "sub", debug)
+            elif len(groups) == 2:
                 dest, src = groups
-                # Try to find a direct gadget for this semantic
                 final_gadget = find_shortest_gadget(categories, category, gadget_pattern, debug, dest=dest, src=src)
                 if not final_gadget:
                     debug_print(f"[DEBUG] No direct gadget found for {semantic}", debug)
-                    # If no direct gadget, construct a chain of gadgets
                     return build_gadget_chain(categories, dest, src, category, gadget_pattern, debug)
                 return [final_gadget]
             elif len(groups) == 1:
                 dest = groups[0]
-                final_gadget = find_shortest_gadget(categories, category, gadget_pattern, debug, dest=dest)
-                return [final_gadget] if final_gadget else []
+                if category == ".: POP gadgets :.":
+                    # Directly return the pop gadget for this register
+                    pop_gadget = find_shortest_gadget(categories, category, gadget_pattern, debug, dest=dest)
+                    return [pop_gadget] if pop_gadget else []
+                else:
+                    final_gadget = find_shortest_gadget(categories, category, gadget_pattern, debug, dest=dest)
+                    return [final_gadget] if final_gadget else []
     debug_print("[DEBUG] Invalid or unsupported semantic format.", debug)
     return []
+
+def build_offset_gadget_chain(categories, dest_reg, src_reg, offset, operation, debug):
+    """
+    Builds a chain of gadgets to achieve dest_reg <- src_reg + offset or dest_reg <- src_reg - offset.
+    Assumes bad chars are already handled in categories.
+    """
+    rop_chain = []
+    
+    # Step 1: Find the best gadget to pop the offset into src_reg
+    pop_gadget = find_shortest_gadget(categories, ".: POP gadgets :.", r".*pop {src}.* ret;?", debug, src=src_reg)
+    if pop_gadget:
+        rop_chain.append(pop_gadget)
+        rop_chain.append("rop += pack('<L', " + hex(two_complement(-1*offset)) + ')       # ' + str(-1*offset))  # Add the offset to the chain
+    else:
+        debug_print(f"[DEBUG] No suitable 'pop {src_reg}' gadget found.", debug)
+        return []  # Exit if no pop gadget is found
+
+    # Step 2: Find the best gadget for the add or sub operation
+    if operation == "add":
+        add_gadget = find_shortest_gadget(categories, ".: REG1 - REG2 gadgets :.", r".*sub {dest}, {src}.* ret;?", debug, dest=dest_reg, src=src_reg)
+        if add_gadget:
+            rop_chain.append(add_gadget)
+        else:
+            debug_print(f"[DEBUG] No suitable 'sub {dest_reg}, {src_reg}' gadget found.", debug)
+            return []  # Exit if no sub gadget is found
+    elif operation == "sub":
+        sub_gadget = find_shortest_gadget(categories, ".: REG1 + REG2 gadgets :.", r".*add {dest}, {src}.* ret;?", debug, dest=dest_reg, src=src_reg)
+        if sub_gadget:
+            rop_chain.append(sub_gadget)
+        else:
+            debug_print(f"[DEBUG] No suitable 'add {dest_reg}, {src_reg}' gadget found.", debug)
+            return []  # Exit if no add gadget is found
+    
+    return rop_chain
+
 
 def build_gadget_chain(categories, dest_reg, src_reg, final_category, final_pattern_template, debug, max_depth=5):
     """

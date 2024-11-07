@@ -56,16 +56,17 @@ Options
 ### Semantic
 Semantic allows you to find and chain gadgets based on pseudo code.
 ```
--s 'eax <- ecx'        # mov eax, ecx
--s '[eax] <- ecx'      # mov [eax], ecx or mov dword ptr [eax], ecx
--s 'eax <- [ecx]'      # mov eax, [ecx] or mov eax, dword ptr [ecx]
--s 'eax <-> ecx'       # xchg eax, ecx
--s 'eax + ecx'         # add eax, ecx
--s 'eax - ecx'         # sub eax, ecx
--s 'eax <- 0'          # xor eax, eax;
--s 'eax++'             # inc eax;
--s 'eax--'             # dec eax;
--s 'neg eax'           # neg eax;
+-s 'eax <- ecx'           # mov eax, ecx
+-s '[eax] <- ecx'         # mov [eax], ecx or mov dword ptr [eax], ecx
+-s 'eax <- [ecx]'         # mov eax, [ecx] or mov eax, dword ptr [ecx]
+-s 'eax <-> ecx'          # xchg eax, ecx
+-s 'eax + ecx'            # add eax, ecx
+-s 'eax - ecx'            # sub eax, ecx
+-s 'eax <- 0'             # xor eax, eax;
+-s 'eax <- ecx + offset   # offset two complement; pop ecx; ret; sub eax, ecx; ret;
+-s 'eax++'                # inc eax;
+-s 'eax--'                # dec eax;
+-s 'neg eax'              # neg eax;
 ```
 
 ### Examples
@@ -81,8 +82,10 @@ Semantic allows you to find and chain gadgets based on pseudo code.
 ```
 Version 0.1
 =============
-[ ] add chaining
+[ ] add advanced chaining
 [ ] add variations to categories
+[x] add basic chaining
+[x] add semantic eax <- ecx + offset and eax <- ecx offset
 [x] add gadget categorization
 [x] add gadget filtering
 [x] add no-color to make grep easier

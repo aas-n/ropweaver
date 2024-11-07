@@ -30,3 +30,22 @@ def contains_bad_bytes(address, bad_bytes):
     hex_address = f"{int(address, 16):08x}"
     chunks = [hex_address[i:i+2] for i in range(0, len(hex_address), 2)] 
     return any(chunk in bad_bytes for chunk in chunks)
+
+def two_complement(value, bits=32):
+    """
+    Calculate the two's complement of an integer value with a specified bit width.
+    
+    Parameters:
+    - value (int): The integer value to convert.
+    - bits (int): The bit width (default is 32 bits).
+    
+    Returns:
+    - int: The two's complement of the given value within the specified bit width.
+    """
+    if value < 0:
+        # If the value is negative, we calculate its two's complement representation
+        value = (1 << bits) + value
+    else:
+        # If the value is positive, mask it to fit within the specified bit width
+        value = value & ((1 << bits) - 1)
+    return value
