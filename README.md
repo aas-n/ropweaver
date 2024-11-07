@@ -75,7 +75,7 @@ Semantic allows you to find and chain gadgets based on pseudo code.
 </h3>
 
 <h3 align="center">
-  <a href="https://github.com/aas-n/ropweaver"><img src="https://i.ibb.co/ZJpQVSy/semantic.png" alt="Ropweaver"></a>
+  <a href="https://github.com/aas-n/ropweaver"><img src="https://i.ibb.co/LkjTJDG/re.png" alt="Ropweaver"></a>
 </h3>
 
 ### Changelog
