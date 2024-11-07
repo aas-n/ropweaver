@@ -10,3 +10,8 @@ def display_gadget_categories(categories, limit):
         print(f"\n{config.RED}{category}{config.RESET}")
         for gadget in gadgets[:limit]:
             print(f"- {gadget}")
+
+def display_chain(gadgets):
+    for gadget in gadgets:
+        print(gadget)
+    print()

@@ -5237,7 +5237,7 @@
 0x50542146  # mov edi, dword ptr [ebp - 0x28]; mov esi, dword ptr [ebp - 0x20]; push 0xa; call 0x38c24; pop ecx; ret; 
 0x505390dd  # mov edi, dword ptr [ebp - 0xc]; mov esp, ebp; pop ebp; ret; 
 0x50538ffa  # mov edi, dword ptr [ebp - 4]; mov esp, ebp; pop ebp; ret; 
-0x5052ab0f  # mov edi, dword ptr [esp + 8]; call 0x2a12b; pop edi; ret; 
+0x5052ab0f  # mov edi, dword ptr [esp + 8]; call 0x2a12b; pop edi; ret;
 0x5052a8cd  # mov edi, dword ptr [esp + 8]; call 0x2a314; pop edi; ret; 
 0x5052a8f4  # mov edi, dword ptr [esp + 8]; call 0x2a566; pop edi; ret; 
 0x50547bb5  # mov edi, eax; call 0x487c5; mov eax, edi; pop esi; pop edi; ret 4; 
@@ -31375,7 +31375,9 @@
 0x502197f8  # push eax; test eax, eax; jne 0x50219807; call [0x50220028] 
 0x5021b450  # push eax; test eax, eax; jne 0x5021B460; call [0x50220028] 
 0x5021c415  # push eax; test eax, eax; jne 0x5021C481; cmp [0x50227470], 0x02; jne 0x5021C3FD; call [0x50220028] 
-0x50213693  # push eax; mov [ebx], eax; push [edi+0x28]; call [edi+0x20] 
+0x50213693  # push eax; mov [ebx], eax; push [edi+0x28]; call [edi+0x20]
+0x50213691  # pop ecx; mov [ebx], edx; ret;
+0x50213692  # pop eax; mov edx, eax; ret;
 0x5021a13a  # push eax; mov [ebp-0x10], eax; test eax, eax; jne 0x5021A176; call [0x50220028] 
 0x502167bd  # push eax; mov [ebp+0x28], ecx; push [ebp-0x04]; push [esi+0x28]; call [esi+0x24] 
 0x5021b331  # push eax; mov eax, [esi+eax]; add eax, 0x20; push eax; call [0x5022004C] 
@@ -37821,7 +37823,7 @@
 0x100236b7  # push eax; add dl, byte [eax]; jmp [0x10025000] 
 0x100232df  # push eax; add dl, byte [eax]; jmp [0x10025100] 
 0x1002369f  # push eax; add dl, byte [eax]; jmp [0x10025004] 
-0x10023663  # push eax; add dl, byte [eax]; jmp [0x1002500C] 
+0x10023663  # push eax; add dl, byte [eax]; jmp [0x1002500C]
 0x10023669  # push eax; add dl, byte [eax]; jmp [0x10025010] 
 0x1002366f  # push eax; add dl, byte [eax]; jmp [0x10025014] 
 0x10023675  # push eax; add dl, byte [eax]; jmp [0x10025018] 
