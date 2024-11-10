@@ -90,7 +90,10 @@ def classify_gadgets(gadget_list, bad_bytes, virtualAddress):
             instruction_only = highlighted_instruction.split("#", 1)[-1].strip()
 
             if instruction_only not in seen_instructions[category]:
-                formatted_gadget = f"rop += pack(\"<L\", moduleAddress + {address})       # {highlighted_instruction}"
+                if virtualAddress is not None:
+                    formatted_gadget = f"rop += pack(\"<L\", moduleAddress + {address})       # {highlighted_instruction}"
+                else:
+                    formatted_gadget = f"rop += pack(\"<L\", {address})       # {highlighted_instruction}"
                 categories[category].add(formatted_gadget)
                 seen_instructions[category].add(instruction_only)
 
