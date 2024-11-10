@@ -7608,3 +7608,4 @@ A total of 7600 gadgets found.
 0x1000e5f9: xor edx, edx ; mov dl, byte [ecx+0x1000E6C0] ; jmp dword [0x1000E6A4+edx*4] ;  (1 found)
 0x1001228f: xor edx, edx ; mov eax, esi ; pop esi ; pop ebx ; retn 0x0010 ;  (1 found)
 0x1000ef29: xor esp, dword [esi] ; add byte [eax], al ; add esp, 0x18 ; ret  ;  (1 found)
+0x100114bd: xor eax, eax ; pop edi ; ret  ;  (1 found)

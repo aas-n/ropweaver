@@ -34,31 +34,31 @@ def classify_gadget(gadget, bad_bytes, virtualAddress):
     highlighted_instructions = highlight_instructions(instructions)
 
     # Add gadgets to categories with highlighted instructions
-    if re.match(r".*mov \[e..\], e..;.* ret;?|.*mov dword ptr \[e..\], e..;.* ret;?", instructions):
+    if re.match(r".*(mov\s+\[\s*(e[abcdsix]{2})\s*\],\s*(e[abcdsix]{2}).*?ret;|mov\s+dword\s+ptr\s+\[\s*(e[abcdsix]{2})\s*\],\s*(e[abcdsix]{2}).*?ret;)", instructions):
         classifications.append((".: [REG1] <- REG2 gadgets :.", address, highlighted_instructions))
-    if re.match(r".*mov e.., \[e..\];.* ret;?|.*mov e.., dword ptr \[e..\];.* ret;?", instructions):
+    if re.match(r".*(mov\s+(e[abcdsix]{2}),\s*\[\s*(e[abcdsix]{2})\s*\].*?ret;|mov\s+dword\s+ptr\s+(e[abcdsix]{2}),\s*\[\s*(e[abcdsix]{2})\s*\].*?ret;)", instructions):
         classifications.append((".: REG1 <- [REG2] gadgets :.", address, highlighted_instructions))
-    if re.match(r".*mov e.., e..;.* ret;?", instructions):
+    if re.match(r".*(mov\s+(e[abcdsix]{2}),\s*(e[abcdsix]{2}).*?ret;|mov\s+dword\s+ptr\s+(e[abcdsix]{2}),\s*(e[abcdsix]{2}).*?ret;|push\s+(e[abcdsix]{2});.*?pop\s+(e[abcdsix]{2}).*?ret;)", instructions):
         classifications.append((".: REG1 <- REG2 gadgets :.", address, highlighted_instructions))
-    if re.match(r".*xchg e.., e..;.* ret;?", instructions):
+    if re.match(r".*xchg\s+(e[abcdsix]{2}),\s*(e[abcdsix]{2}).*?ret;", instructions):
         classifications.append((".: REG1 <-> REG2 gadgets :.", address, highlighted_instructions))
-    if re.match(r".*inc e..;.* ret;?", instructions):
+    if re.match(r".*inc\s+(e[abcdsix]{2}).*?ret;", instructions):
         classifications.append((".: REG++ gadgets :.", address, highlighted_instructions))
-    if re.match(r".*dec e..;.* ret?;", instructions):
+    if re.match(r".*dec\s+(e[abcdsix]{2}).*?ret;", instructions):
         classifications.append((".: REG-- gadgets :.", address, highlighted_instructions))
-    if re.match(r".*add e.., e..;.* ret;?", instructions):
+    if re.match(r".*add\s+(e[abcdsix]{2}),\s*(e[abcdsix]{2}).*?ret;", instructions):
         classifications.append((".: REG1 + REG2 gadgets :.", address, highlighted_instructions))
-    if re.match(r".*sub e.., e..;.* ret;?", instructions):
+    if re.match(r".*sub\s+(e[abcdsix]{2}),\s*(e[abcdsix]{2}).*?ret;", instructions):
         classifications.append((".: REG1 - REG2 gadgets :.", address, highlighted_instructions))
-    if re.match(r".*neg e..;.* ret;?", instructions):
+    if re.match(r".*neg\s+(e[abcdsix]{2}).*?ret;", instructions):
         classifications.append((".: NEG gadgets :.", address, highlighted_instructions))
-    if re.match(r".*xor e.., e..;.* ret;?", instructions):
+    if re.match(r".*xor\s+(e[abcdsix]{2}),\s*(e[abcdsix]{2}).*?ret;", instructions):
         classifications.append((".: XOR REG1, REG2 gadgets :.", address, highlighted_instructions))
-    if re.match(r".*push e..;.* pop e..;.* ret;?", instructions):
+    if re.match(r".*push\s+(e[abcdsix]{2}).*?pop\s+\1.*?ret;", instructions):
         classifications.append((".: PUSH/POP gadgets :.", address, highlighted_instructions))
-    if re.match(r".*pop e..; ret;?", instructions):
+    if re.match(r"(.*pop \w+;.*?ret;)", instructions):
         classifications.append((".: POP gadgets :.", address, highlighted_instructions))
-    if re.match(r".*xor\s+(e[abcdsix]{2}),\s*\1;\s*ret;|.*mov e.., 0x0x0000000[01];.* ret;?", instructions):
+    if re.match(r".*(xor\s+(e[abcdsix]{2}),\s*\2;.*?ret;|mov\s+(e[abcdsix]{2}),\s*(0x0+|0);.*?ret;)", instructions):
         classifications.append((".: REG <- 0 gadgets :.", address, highlighted_instructions))
 
     return classifications
