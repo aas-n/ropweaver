@@ -35,7 +35,7 @@ def main():
     bad_bytes = args.bad_bytes.split()
     bad_bytes = [byte.lower() for byte in bad_bytes if len(byte) == 2 and all(c in "0123456789abcdef" for c in byte.lower())]
     gadget_list = load_gadgets(args.filename)
-    categories = classify_gadgets(gadget_list, bad_bytes, args.virtualaddress)
+    categories = classify_gadgets(gadget_list, bad_bytes, args.virtualaddress, args.debug)
 
     if args.semantic:
         semantic_gadgets = find_semantic_gadgets(categories, args.semantic, args.debug)
