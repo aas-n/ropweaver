@@ -24,6 +24,7 @@ def main():
     parser.add_argument("-c", "--no-color", action="store_true", help="Disable colored output.")
     parser.add_argument("-l", "--limit", type=int, default=None, help="Limit the number of gadgets displayed per category.")
     parser.add_argument("-s", "--semantic", help="Semantic instruction, e.g., 'eax <- ecx'")
+    parser.add_argument("-a", "--virtualaddress", help="The virtual address of the module in hexadecimal (-a 0x10000000).")
     parser.add_argument("-v", "--debug", action="store_true", help="Enable debug output.")
     args = parser.parse_args()
 
@@ -34,7 +35,7 @@ def main():
     bad_bytes = args.bad_bytes.split()
     bad_bytes = [byte.lower() for byte in bad_bytes if len(byte) == 2 and all(c in "0123456789abcdef" for c in byte.lower())]
     gadget_list = load_gadgets(args.filename)
-    categories = classify_gadgets(gadget_list, bad_bytes)
+    categories = classify_gadgets(gadget_list, bad_bytes, args.virtualaddress)
 
     if args.semantic:
         semantic_gadgets = find_semantic_gadgets(categories, args.semantic, args.debug)

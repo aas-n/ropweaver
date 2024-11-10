@@ -27,8 +27,13 @@ def highlight_instructions(instructions):
     return re.sub(config.INSTRUCTION_PATTERN, f"{config.YELLOW}\\1{config.RESET}", instructions)
 
 def contains_bad_bytes(address, bad_bytes):
-    hex_address = f"{int(address, 16):08x}"
-    chunks = [hex_address[i:i+2] for i in range(0, len(hex_address), 2)] 
+    hex_address = address[2:]  # Enlève le préfixe "0x"
+    
+    # Découpe en paquets de 2 en partant de la droite
+    chunks = [hex_address[max(i-2, 0):i] for i in range(len(hex_address), 0, -2)]
+    chunks = [chunk.zfill(2) for chunk in chunks]  # Ajoute un 0 à gauche si nécessaire
+    
+    # Vérifie la présence de bad_bytes dans chaque paquet
     return any(chunk in bad_bytes for chunk in chunks)
 
 def two_complement(value, bits=32):

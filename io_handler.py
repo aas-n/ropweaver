@@ -1,8 +1,16 @@
 import config
+import re
 
 def load_gadgets(filename):
     with open(filename, "r") as file:
-        return [line.strip() for line in file if line.strip()]
+        lines = [line.strip() for line in file if line.strip()]
+
+    # Check if it's a Windows output by looking for the typical header line
+    if any("Trying to open" in line for line in lines):
+        # Skip lines until we find the first gadget line that matches an address format
+        lines = [line for line in lines if re.match(r"0x[0-9a-fA-F]+:", line)]
+
+    return lines
 
 def display_gadget_categories(categories, limit):
     for category, gadgets in categories.items():

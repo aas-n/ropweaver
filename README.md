@@ -50,6 +50,7 @@ Options
 -c, --no-color: Disable colored output.
 -l, --limit: Limit the number of gadgets displayed per category.
 -s, --semantic: Search for gadgets matching a specific semantic instruction, e.g., 'eax <- ecx' or '[edi] <- ecx'.
+-a, --virtualaddress: The virtual address of the module in hexadecimal (-a '0x10000000').
 -v, --debug: Enable verbose output for debugging.
 ```
 
@@ -83,9 +84,9 @@ Semantic allows you to find and chain gadgets based on pseudo code.
 Version 0.1
 =============
 [ ] add advanced chaining
-[ ] add baseAddress option
 [ ] add variations to categories
-[ ] support windows r++ outputs
+[x] add baseAddress option
+[x] support windows r++ outputs
 [x] support linux r++ outputs
 [x] add basic chaining
 [x] add semantic eax <- ecx + offset and eax <- ecx offset
