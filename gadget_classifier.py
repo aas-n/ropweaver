@@ -49,7 +49,7 @@ def classify_gadget(gadget, bad_bytes, virtualAddress, debug):
     # Add gadgets to categories with highlighted instructions
     if re.match(r".*(mov\s+\[\s*(e[abcdsix]{2})\s*\],\s*(e[abcdsix]{2}).*?ret;|mov\s+dword\s+ptr\s+\[\s*(e[abcdsix]{2})\s*\],\s*(e[abcdsix]{2}).*?ret;|mov\s+dword\s+\[\s*(e[abcdsix]{2})\s*\],\s*(e[abcdsix]{2}).*?ret;)", instructions):
         classifications.append((".: [REG1] <- REG2 gadgets :.", address, highlighted_instructions))
-    if re.match(r".*(mov\s+(e[abcdsix]{2}),\s*\[\s*(e[abcdsix]{2})\s*\].*?ret;|mov\s+dword\s+ptr\s+(e[abcdsix]{2}),\s*\[\s*(e[abcdsix]{2})\s*\].*?ret;|mov\s+dword\s+(e[abcdsix]{2}),\s*\[\s*(e[abcdsix]{2})\s*\].*?ret;)", instructions):
+    if re.match(r".*(mov\s+(e[abcdsix]{2}),\s*dword\s*\[\s*(e[abcdsix]{2})\s*\].*?ret;|mov\s+dword\s+ptr\s+(e[abcdsix]{2}),\s*\[\s*(e[abcdsix]{2})\s*\].*?ret;|mov\s+dword\s+(e[abcdsix]{2}),\s*\[\s*(e[abcdsix]{2})\s*\].*?ret;)", instructions):
         classifications.append((".: REG1 <- [REG2] gadgets :.", address, highlighted_instructions))
     if re.match(r".*(mov\s+(e[abcdsix]{2}),\s*(e[abcdsix]{2}).*?ret;|mov\s+dword\s+ptr\s+(e[abcdsix]{2}),\s*(e[abcdsix]{2}).*?ret;|push\s+(e[abcdsix]{2});.*?pop\s+(e[abcdsix]{2}).*?ret;)", instructions):
         classifications.append((".: REG1 <- REG2 gadgets :.", address, highlighted_instructions))

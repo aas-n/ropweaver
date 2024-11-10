@@ -7611,3 +7611,4 @@ A total of 7600 gadgets found.
 0x100114bd: xor eax, eax ; pop edi ; ret  ;  (1 found)
 0x1101044e: dec ecx ; pop edi ; mov eax, ecx ; ret  ;  (1 found)
 0x10219f8c: mov dword eax, [ecx] ; mov dword [eax], edx ; pop eax ; ret  ;  (1 found)
+0x5051f278: mov eax, dword [ecx] ; ret  ;  (1 found)
