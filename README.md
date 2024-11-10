@@ -83,7 +83,10 @@ Semantic allows you to find and chain gadgets based on pseudo code.
 Version 0.1
 =============
 [ ] add advanced chaining
+[ ] add baseAddress option
 [ ] add variations to categories
+[ ] support windows r++ outputs
+[x] support linux r++ outputs
 [x] add basic chaining
 [x] add semantic eax <- ecx + offset and eax <- ecx offset
 [x] add gadget categorization
